@@ -61,6 +61,14 @@ const Dashboard = () => {
 
             <button
               onClick={() => {
+                // Pendo Track Event: profile_edit_started
+                if (typeof pendo !== "undefined") {
+                  pendo.track("profile_edit_started", {
+                    source_page: "dashboard",
+                    user_type: profileData?.user?.userType || "unknown",
+                  });
+                }
+
                 setOpenModal(true);
                 handleSetDefaultValues(profileData?.user);
                 console.log(profileData?.user);

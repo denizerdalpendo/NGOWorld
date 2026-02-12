@@ -24,6 +24,13 @@ const Donate = () => {
       const response = await GetAllClubs();
       setClubData(response);
       setLoading(false);
+
+      // Pendo Track Event: donation_page_viewed
+      if (typeof pendo !== "undefined") {
+        pendo.track("donation_page_viewed", {
+          clubs_count: String(response?.length || 0),
+        });
+      }
     };
     fetchClubData();
   }, []);
@@ -49,6 +56,13 @@ const Donate = () => {
   // Redirect user to login page if they are not logged in
   useEffect(() => {
     if (!Cookies.get("isLoggedIn")) {
+      // Pendo Track Event: donation_unauthenticated_redirect
+      if (typeof pendo !== "undefined") {
+        pendo.track("donation_unauthenticated_redirect", {
+          referrer_url: document.referrer || "",
+        });
+      }
+
       toast.error("Please log in before donating");
       navigate("/user/login");
     }

@@ -38,6 +38,14 @@ const Profile = () => {
       checkMissingFields(user) &&
       trueUser
     ) {
+      // Pendo Track Event: profile_completion_displayed
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_completion_displayed", {
+          missing_fields_count: String(checkMissingFields(user) || 0),
+          user_type: user?.userType || "unknown",
+        });
+      }
+
       setShowProfileModal(true);
     }
   }, []);
@@ -46,6 +54,13 @@ const Profile = () => {
     const data = await Logout();
 
     if (data?.status === 200) {
+      // Pendo Track Event: user_logged_out
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_logged_out", {
+          user_type: user?.userType || "unknown",
+        });
+      }
+
       showSuccessToast(data?.data?.message);
       setTimeout(() => {
         navigate("/");
@@ -99,7 +114,15 @@ const Profile = () => {
                     Edit profile
                   </Button>
                 ) : (
-                  <Button variant="solid" className="profile_header_cta">
+                  <Button variant="solid" className="profile_header_cta" onClickfunction={() => {
+                    // Pendo Track Event: subscribe_clicked
+                    if (typeof pendo !== "undefined") {
+                      pendo.track("subscribe_clicked", {
+                        target_user_type: details?.userType || "unknown",
+                        target_user_id: details?._id || params.userName || "",
+                      });
+                    }
+                  }}>
                     <svg
                       stroke="currentColor"
                       fill="currentColor"
@@ -131,7 +154,15 @@ const Profile = () => {
                     Logout
                   </Button>
                 ) : (
-                  <Button variant="solid" className="profile_header_cta">
+                  <Button variant="solid" className="profile_header_cta" onClickfunction={() => {
+                    // Pendo Track Event: sponsor_clicked
+                    if (typeof pendo !== "undefined") {
+                      pendo.track("sponsor_clicked", {
+                        target_user_type: details?.userType || "unknown",
+                        target_user_id: details?._id || params.userName || "",
+                      });
+                    }
+                  }}>
                     <svg
                       stroke="currentColor"
                       fill="currentColor"
@@ -163,7 +194,15 @@ const Profile = () => {
                 Edit profile
               </Button>
             ) : (
-              <Button variant="solid" className="profile_header_cta">
+              <Button variant="solid" className="profile_header_cta" onClickfunction={() => {
+                // Pendo Track Event: subscribe_clicked
+                if (typeof pendo !== "undefined") {
+                  pendo.track("subscribe_clicked", {
+                    target_user_type: details?.userType || "unknown",
+                    target_user_id: details?._id || params.userName || "",
+                  });
+                }
+              }}>
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
@@ -195,7 +234,15 @@ const Profile = () => {
                 Logout
               </Button>
             ) : (
-              <Button variant="solid" className="profile_header_cta">
+              <Button variant="solid" className="profile_header_cta" onClickfunction={() => {
+                // Pendo Track Event: sponsor_clicked
+                if (typeof pendo !== "undefined") {
+                  pendo.track("sponsor_clicked", {
+                    target_user_type: details?.userType || "unknown",
+                    target_user_id: details?._id || params.userName || "",
+                  });
+                }
+              }}>
                 <svg
                   stroke="currentColor"
                   fill="currentColor"

@@ -14,6 +14,14 @@ const Home = () => {
     const authData = await successCallback();
 
     if (authData?.status === 200) {
+      // Pendo Track Event: google_auth_completed
+      if (typeof pendo !== "undefined") {
+        pendo.track("google_auth_completed", {
+          user_type: authData.data.user?.userType || "unknown",
+          is_new_user: String(authData.data.user?.isNewUser || false),
+        });
+      }
+
       showSuccessToast(authData?.data?.message);
       dispatch(updateUserData(authData.data.user));
       dispatch(toggleUserLogin());

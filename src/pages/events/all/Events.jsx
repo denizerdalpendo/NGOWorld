@@ -38,6 +38,15 @@ const Events = () => {
             name=""
             id=""
             placeholder="Type to begin search, or use the filters"
+            onChange={(e) => {
+              // Pendo Track Event: event_search_performed (debounced via onChange)
+              if (e.target.value && typeof pendo !== "undefined") {
+                pendo.track("event_search_performed", {
+                  search_query: (e.target.value || "").substring(0, 100),
+                  results_count: String(events?.length || 0),
+                });
+              }
+            }}
           />
           <button>
             Filters <CiFilter />
@@ -47,6 +56,13 @@ const Events = () => {
         <Button
           className="createevent"
           onClickfunction={() => {
+            // Pendo Track Event: event_creation_started
+            if (typeof pendo !== "undefined") {
+              pendo.track("event_creation_started", {
+                user_type: "club",
+              });
+            }
+
             setShowCreateModal(true);
           }}
         >
