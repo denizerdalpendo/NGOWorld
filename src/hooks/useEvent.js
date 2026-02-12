@@ -65,14 +65,36 @@ export function useEvent(event) {
       const response = await CreateEvent(event);
 
       if (response.status === 201) {
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            event_mode: event.mode || "",
+            event_name: event.name || "",
+            has_cover_image: Boolean(event.coverImage),
+            start_date: event.startDate ? String(event.startDate) : "",
+            end_date: event.endDate ? String(event.endDate) : "",
+          });
+        }
         showSuccessToast(response.data.message);
         setshowCreateModal(false);
 
         mutate(eventEndpoints.all);
       } else {
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_creation_failed", {
+            error_type: "server",
+            error_message: response.response?.data?.message || "Unknown error",
+          });
+        }
         showErrorToast(response.response.data.message);
       }
     } else {
+      if (typeof pendo !== "undefined") {
+        pendo.track("event_creation_failed", {
+          error_type: "validation",
+          error_message: "Please fill all the required fields",
+          validation_errors: Object.keys(errors).join(","),
+        });
+      }
       showErrorToast("Please fill all the required fields");
     }
   };

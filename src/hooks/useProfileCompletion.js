@@ -107,6 +107,15 @@ const useProfileCompletion = () => {
 
     setErrors(newErrors);
 
+    if (Object.keys(newErrors).length > 0) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_completion_validation_error", {
+          error_fields: Object.keys(newErrors).join(","),
+          error_count: Object.keys(newErrors).length,
+        });
+      }
+    }
+
     const data = await completeProfileApiCall({
       credentials: {
         ...updatedCredentials,
@@ -117,6 +126,14 @@ const useProfileCompletion = () => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_completion_submitted", {
+          user_type: "club",
+          has_cover_image: Boolean(updatedCredentials.coverImage),
+          has_description: Boolean(updatedCredentials.description),
+          address_country: updatedCredentials.address?.country || "",
+        });
+      }
       showSuccessToast(data?.data?.message);
       return;
     }

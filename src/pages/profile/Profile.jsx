@@ -46,6 +46,12 @@ const Profile = () => {
     const data = await Logout();
 
     if (data?.status === 200) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_logged_out", {
+          user_type: user?.userType || "",
+          logout_source: "profile",
+        });
+      }
       showSuccessToast(data?.data?.message);
       setTimeout(() => {
         navigate("/");
@@ -99,7 +105,7 @@ const Profile = () => {
                     Edit profile
                   </Button>
                 ) : (
-                  <Button variant="solid" className="profile_header_cta">
+                  <Button variant="solid" className="profile_header_cta" onClickfunction={() => { if (typeof pendo !== "undefined") { pendo.track("club_subscribe_clicked", { club_username: details?.userName || params.userName || "", club_name: details?.name || "" }); } }}>
                     <svg
                       stroke="currentColor"
                       fill="currentColor"
@@ -131,7 +137,7 @@ const Profile = () => {
                     Logout
                   </Button>
                 ) : (
-                  <Button variant="solid" className="profile_header_cta">
+                  <Button variant="solid" className="profile_header_cta" onClickfunction={() => { if (typeof pendo !== "undefined") { pendo.track("club_sponsor_clicked", { club_username: details?.userName || params.userName || "", club_name: details?.name || "" }); } }}>
                     <svg
                       stroke="currentColor"
                       fill="currentColor"
@@ -163,7 +169,7 @@ const Profile = () => {
                 Edit profile
               </Button>
             ) : (
-              <Button variant="solid" className="profile_header_cta">
+              <Button variant="solid" className="profile_header_cta" onClickfunction={() => { if (typeof pendo !== "undefined") { pendo.track("club_subscribe_clicked", { club_username: details?.userName || params.userName || "", club_name: details?.name || "" }); } }}>
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
@@ -195,7 +201,7 @@ const Profile = () => {
                 Logout
               </Button>
             ) : (
-              <Button variant="solid" className="profile_header_cta">
+              <Button variant="solid" className="profile_header_cta" onClickfunction={() => { if (typeof pendo !== "undefined") { pendo.track("club_sponsor_clicked", { club_username: details?.userName || params.userName || "", club_name: details?.name || "" }); } }}>
                 <svg
                   stroke="currentColor"
                   fill="currentColor"

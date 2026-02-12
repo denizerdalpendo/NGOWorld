@@ -281,6 +281,11 @@ const CreateEvent = ({ setShowCreateModal }) => {
                 className="plan basic-plan"
                 htmlFor="basic"
                 onClick={() => {
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("event_mode_selected", {
+                      event_mode: "online",
+                    });
+                  }
                   setCredentials({ ...credentials, eventMode: "online" });
                 }}
               >
@@ -305,6 +310,11 @@ const CreateEvent = ({ setShowCreateModal }) => {
                 className="plan complete-plan"
                 htmlFor="complete"
                 onClick={() => {
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("event_mode_selected", {
+                      event_mode: "offline",
+                    });
+                  }
                   setCredentials({ ...credentials, eventMode: "offline" });
                 }}
               >

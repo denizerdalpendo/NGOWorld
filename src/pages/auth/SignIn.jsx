@@ -22,6 +22,11 @@ const SignIn = () => {
   const [showPassword, setshowPassword] = useState(false);
 
   const handleGoogle = async () => {
+    if (typeof pendo !== "undefined") {
+      pendo.track("google_oauth_initiated", {
+        source_page: "signin",
+      });
+    }
     const response = await GoogleAuth();
     window.location.href = response;
   };

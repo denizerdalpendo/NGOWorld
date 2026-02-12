@@ -116,6 +116,12 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          user_type: profileData?.userType || "",
+          fields_updated: Object.keys(credentials).filter((k) => credentials[k] && k !== "address").join(","),
+        });
+      }
       showSuccessToast(data?.data?.message);
       refreshProfileData();
       setOpenModal(false);
@@ -203,7 +209,15 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
                 id="dropzone_file"
                 type="file"
                 className="hidden"
-                onChange={(e) => handleFileChange(e, "cover")}
+                onChange={(e) => {
+                  handleFileChange(e, "cover");
+                  if (typeof pendo !== "undefined" && e.target.files[0]) {
+                    pendo.track("cover_image_uploaded", {
+                      upload_context: "profile_update",
+                      file_type: e.target.files[0].type || "",
+                    });
+                  }
+                }}
               />
 
               <label
@@ -241,7 +255,14 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
                 id="dropzone_pfp"
                 type="file"
                 className="hidden"
-                onChange={(e) => handleFileChange(e, "pfp")}
+                onChange={(e) => {
+                  handleFileChange(e, "pfp");
+                  if (typeof pendo !== "undefined" && e.target.files[0]) {
+                    pendo.track("profile_picture_uploaded", {
+                      file_type: e.target.files[0].type || "",
+                    });
+                  }
+                }}
               />
             </div>
           </div>

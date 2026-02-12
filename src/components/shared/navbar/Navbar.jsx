@@ -67,6 +67,12 @@ const Navbar = () => {
     const data = await Logout();
 
     if (data?.status === 200) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_logged_out", {
+          user_type: user?.userType || "",
+          logout_source: "navbar",
+        });
+      }
       showSuccessToast(data?.data?.message);
       navigate("/");
       dispatch(resetUserData());
