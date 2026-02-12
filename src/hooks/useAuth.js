@@ -47,12 +47,51 @@ export function useAuth(authType) {
 
     if (response?.status === 201 || response?.status === 200) {
       showSuccessToast(response?.data?.message);
+      const userData = response.data.user;
       dispatch(
         updateUserData({
-          ...response.data.user,
+          ...userData,
           isLoggedIn: true,
         }),
       );
+
+      if (typeof window.pendo !== "undefined") {
+        window.pendo.identify({
+          visitor: {
+            id: userData._id,
+            email: userData.email || credentials.email,
+            full_name: userData.name || [userData.firstName, userData.lastName].filter(Boolean).join(" "),
+            userName: userData.userName,
+            userType: userData.userType,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            name: userData.name,
+            description: userData.description,
+            tagLine: userData.tagLine,
+            addressCity: userData.address?.city,
+            addressState: userData.address?.state,
+            addressCountry: userData.address?.country,
+            addressPincode: userData.address?.pincode,
+            hasCompletedProfile: userData.config?.hasCompletedProfile,
+            isLoggedIn: true,
+            profileImage: userData.profileImage,
+            coverImage: userData.coverImage,
+          },
+          account: {
+            id: userData.userType === "club" ? userData._id : undefined,
+            name: userData.userType === "club" ? userData.name : undefined,
+            userName: userData.userName,
+            userType: userData.userType,
+            tagLine: userData.tagLine,
+            description: userData.description,
+            hasCompletedProfile: userData.config?.hasCompletedProfile,
+            addressCity: userData.address?.city,
+            addressState: userData.address?.state,
+            addressCountry: userData.address?.country,
+            addressPincode: userData.address?.pincode,
+          },
+        });
+      }
 
       setTimeout(() => {
         navigate("/");
