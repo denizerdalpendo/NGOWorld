@@ -37,6 +37,16 @@ const ClubCard = ({ club }) => {
           to={`/club/${club?.userName}`}
           aria-label={`Visit ${club?.name || "club"} page`}
           className="clubcard_cta_link"
+          onClick={() => {
+            // Pendo Track Event: club_card_clicked
+            if (typeof pendo !== "undefined") {
+              pendo.track("club_card_clicked", {
+                club_name: (club?.name || "").substring(0, 100),
+                club_id: club?._id || "",
+                source_page: window.location.pathname || "",
+              });
+            }
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

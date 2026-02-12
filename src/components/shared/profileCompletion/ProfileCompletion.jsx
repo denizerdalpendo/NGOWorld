@@ -56,6 +56,23 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
                 });
 
                 if (data?.status === 200) {
+                  // Pendo Track Event: profile_completion_submitted
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("profile_completion_submitted", {
+                      has_description: String(Boolean(credentials?.description)),
+                      has_cover_image: String(Boolean(uploadedImage)),
+                      has_full_address: String(
+                        Boolean(
+                          credentials?.address?.line1 &&
+                            credentials?.address?.city &&
+                            credentials?.address?.state &&
+                            credentials?.address?.country,
+                        ),
+                      ),
+                      user_type: "club",
+                    });
+                  }
+
                   showSuccessToast(data?.data?.message);
                   setShowEditModal(false);
                   refreshProfileData();

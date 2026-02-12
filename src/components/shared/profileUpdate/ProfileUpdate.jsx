@@ -42,6 +42,14 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
   const handleFileChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
+      // Pendo Track Event: profile_image_uploaded
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_image_uploaded", {
+          image_type: type === "cover" ? "cover" : "profile_picture",
+          file_size: String(file.size || 0),
+        });
+      }
+
       const imageURL = URL.createObjectURL(file);
       if (type === "cover") {
         setUploadedImage(imageURL);
@@ -116,6 +124,15 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      // Pendo Track Event: profile_updated
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          fields_updated: Object.keys(credentials).join(", "),
+          has_cover_image: String(Boolean(uploadedImage)),
+          has_profile_picture: String(Boolean(uploadedProfilePicture)),
+        });
+      }
+
       showSuccessToast(data?.data?.message);
       refreshProfileData();
       setOpenModal(false);

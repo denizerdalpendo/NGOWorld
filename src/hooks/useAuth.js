@@ -54,11 +54,46 @@ export function useAuth(authType) {
         }),
       );
 
+      // Pendo Track: user_signed_up
+      if (authType === "signup") {
+        pendo.track("user_signed_up", {
+          user_type: credentials.userType?.value || "individual",
+          auth_method: "email",
+          email_domain: credentials.email?.split("@")[1] || "",
+        });
+      }
+
+      // Pendo Track: user_signed_in
+      if (authType === "signin") {
+        pendo.track("user_signed_in", {
+          auth_method: "email",
+          user_type: response.data.user?.userType || "",
+        });
+      }
+
       setTimeout(() => {
         navigate("/");
         setLoading(false);
       }, 1000);
     } else {
+      // Pendo Track: user_signup_failed
+      if (authType === "signup") {
+        pendo.track("user_signup_failed", {
+          error_type: "server",
+          error_message: (response?.data?.message || "Unknown error").substring(0, 100),
+          user_type: credentials.userType?.value || "individual",
+          auth_method: "email",
+        });
+      }
+
+      // Pendo Track: user_signin_failed
+      if (authType === "signin") {
+        pendo.track("user_signin_failed", {
+          error_type: "server",
+          error_message: (response?.data?.message || "Unknown error").substring(0, 100),
+        });
+      }
+
       showErrorToast(response?.data?.message);
       setLoading(false);
     }

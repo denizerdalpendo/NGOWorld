@@ -38,6 +38,15 @@ const Clubs = () => {
             name=""
             id=""
             placeholder="Type to begin search, or use the filters"
+            onChange={(e) => {
+              // Pendo Track Event: club_search_performed (debounced via onChange)
+              if (e.target.value && typeof pendo !== "undefined") {
+                pendo.track("club_search_performed", {
+                  search_query: (e.target.value || "").substring(0, 100),
+                  results_count: String(clubs?.length || 0),
+                });
+              }
+            }}
           />
           <button>
             Filters <CiFilter />

@@ -43,6 +43,14 @@ const CreateEvent = ({ setShowCreateModal }) => {
   const handleFileChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
+      // Pendo Track Event: event_cover_image_uploaded
+      if (type === "cover" && typeof pendo !== "undefined") {
+        pendo.track("event_cover_image_uploaded", {
+          file_type: file.type || "unknown",
+          file_size: String(file.size || 0),
+        });
+      }
+
       const imageURL = URL.createObjectURL(file);
       if (type === "cover") {
         setUploadedImage(imageURL);
@@ -281,6 +289,13 @@ const CreateEvent = ({ setShowCreateModal }) => {
                 className="plan basic-plan"
                 htmlFor="basic"
                 onClick={() => {
+                  // Pendo Track Event: event_mode_selected
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("event_mode_selected", {
+                      selected_mode: "online",
+                    });
+                  }
+
                   setCredentials({ ...credentials, eventMode: "online" });
                 }}
               >
@@ -305,6 +320,13 @@ const CreateEvent = ({ setShowCreateModal }) => {
                 className="plan complete-plan"
                 htmlFor="complete"
                 onClick={() => {
+                  // Pendo Track Event: event_mode_selected
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("event_mode_selected", {
+                      selected_mode: "offline",
+                    });
+                  }
+
                   setCredentials({ ...credentials, eventMode: "offline" });
                 }}
               >

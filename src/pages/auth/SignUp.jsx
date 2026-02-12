@@ -28,6 +28,13 @@ const SignUp = () => {
 
   // Handlers
   const handleGoogle = async () => {
+    // Pendo Track Event: google_auth_initiated
+    if (typeof pendo !== "undefined") {
+      pendo.track("google_auth_initiated", {
+        source_page: "signup",
+      });
+    }
+
     const response = await GoogleAuth();
     window.location.href = response;
   };
@@ -226,6 +233,17 @@ const SignUp = () => {
                     data-unchecked="Organization"
                     data-checked="Individual"
                     onClick={() => {
+                      const previousType = credentials.userType?.value || "individual";
+                      const selectedType = previousType === "individual" ? "organization" : "individual";
+
+                      // Pendo Track Event: account_type_toggled
+                      if (typeof pendo !== "undefined") {
+                        pendo.track("account_type_toggled", {
+                          selected_type: selectedType,
+                          previous_type: previousType,
+                        });
+                      }
+
                       setCredentials((prev) => {
                         return {
                           userType:

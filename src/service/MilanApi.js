@@ -50,10 +50,34 @@ export const ReportProblem = async (credentials) => {
   try {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
+      // Pendo Track Event: report_problem_submitted
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          report_type: credentials?.type || "general",
+          success: "true",
+        });
+      }
+
       return true;
     } else if (response.data.message === "tryagain") {
+      // Pendo Track Event: report_problem_submitted (retry)
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          report_type: credentials?.type || "general",
+          success: "tryagain",
+        });
+      }
+
       return "tryagain";
     } else {
+      // Pendo Track Event: report_problem_submitted (failed)
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          report_type: credentials?.type || "general",
+          success: "false",
+        });
+      }
+
       return false;
     }
   } catch (error) {
