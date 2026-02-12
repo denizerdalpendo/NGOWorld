@@ -47,6 +47,11 @@ const Events = () => {
         <Button
           className="createevent"
           onClickfunction={() => {
+            if (typeof pendo !== "undefined") {
+              pendo.track("create_event_modal_opened", {
+                user_type: "",
+              });
+            }
             setShowCreateModal(true);
           }}
         >

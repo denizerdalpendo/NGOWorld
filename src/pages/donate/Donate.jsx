@@ -49,6 +49,9 @@ const Donate = () => {
   // Redirect user to login page if they are not logged in
   useEffect(() => {
     if (!Cookies.get("isLoggedIn")) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("donation_page_auth_redirect", {});
+      }
       toast.error("Please log in before donating");
       navigate("/user/login");
     }

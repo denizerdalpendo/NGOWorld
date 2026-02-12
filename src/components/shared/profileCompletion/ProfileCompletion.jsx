@@ -117,7 +117,15 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
                 id="dropzone_file"
                 type="file"
                 className="hidden"
-                onChange={(e) => handleFileChange(e, "cover")}
+                onChange={(e) => {
+                  handleFileChange(e, "cover");
+                  if (typeof pendo !== "undefined" && e.target.files[0]) {
+                    pendo.track("cover_image_uploaded", {
+                      upload_context: "profile_completion",
+                      file_type: e.target.files[0].type || "",
+                    });
+                  }
+                }}
               />
             </div>
           </div>

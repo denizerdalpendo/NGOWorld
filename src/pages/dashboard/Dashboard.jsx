@@ -21,8 +21,25 @@ const Dashboard = () => {
     {
       onSuccess: (data) => {
         dispatch(updateUserData(data?.user));
+        if (typeof pendo !== "undefined") {
+          pendo.track("dashboard_loaded", {
+            user_type: data?.user?.userType || "",
+            has_completed_profile: String(data?.user?.config?.hasCompletedProfile || false),
+          });
+          if (data?.user?.config?.hasCompletedProfile === false) {
+            pendo.track("profile_completion_prompt_shown", {
+              user_type: data?.user?.userType || "",
+            });
+          }
+        }
       },
       onError: (error) => {
+        if (typeof pendo !== "undefined") {
+          pendo.track("dashboard_fetch_error", {
+            error_message: error?.response?.data?.message || "Unknown error",
+            status_code: String(error?.response?.status || ""),
+          });
+        }
         showErrorToast(error?.response?.data?.message);
       },
     },
@@ -61,6 +78,12 @@ const Dashboard = () => {
 
             <button
               onClick={() => {
+                if (typeof pendo !== "undefined") {
+                  pendo.track("profile_edit_modal_opened", {
+                    user_type: profileData?.user?.userType || "",
+                    source_page: "dashboard",
+                  });
+                }
                 setOpenModal(true);
                 handleSetDefaultValues(profileData?.user);
                 console.log(profileData?.user);
