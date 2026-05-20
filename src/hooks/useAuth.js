@@ -47,12 +47,32 @@ export function useAuth(authType) {
 
     if (response?.status === 201 || response?.status === 200) {
       showSuccessToast(response?.data?.message);
+      const user = response.data.user;
       dispatch(
         updateUserData({
-          ...response.data.user,
+          ...user,
           isLoggedIn: true,
         }),
       );
+
+      window.pendo.identify({
+        visitor: {
+          id: user._id || '',
+          email: user.email || '',
+          full_name: user.name || '',
+          userName: user.userName || '',
+          userType: user.userType || '',
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          description: user.description || '',
+          tagLine: user.tagLine || '',
+          hasCompletedProfile: user.config?.hasCompletedProfile || false,
+          addressCity: user.address?.city || '',
+          addressState: user.address?.state || '',
+          addressCountry: user.address?.country || '',
+          addressPincode: user.address?.pincode || '',
+        },
+      });
 
       setTimeout(() => {
         navigate("/");
