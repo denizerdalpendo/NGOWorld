@@ -50,6 +50,12 @@ export const ReportProblem = async (credentials) => {
   try {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_submitted", {
+          reportType: credentials?.reportType || "",
+          reportSuccess: true,
+        });
+      }
       return true;
     } else if (response.data.message === "tryagain") {
       return "tryagain";
