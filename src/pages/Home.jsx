@@ -15,8 +15,28 @@ const Home = () => {
 
     if (authData?.status === 200) {
       showSuccessToast(authData?.data?.message);
-      dispatch(updateUserData(authData.data.user));
+      const user = authData.data.user;
+      dispatch(updateUserData(user));
       dispatch(toggleUserLogin());
+
+      window.pendo.identify({
+        visitor: {
+          id: user._id || '',
+          email: user.email || '',
+          full_name: user.name || '',
+          userName: user.userName || '',
+          userType: user.userType || '',
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          description: user.description || '',
+          tagLine: user.tagLine || '',
+          hasCompletedProfile: user.config?.hasCompletedProfile || false,
+          addressCity: user.address?.city || '',
+          addressState: user.address?.state || '',
+          addressCountry: user.address?.country || '',
+          addressPincode: user.address?.pincode || '',
+        },
+      });
     } else {
       showErrorToast(authData?.message);
     }
