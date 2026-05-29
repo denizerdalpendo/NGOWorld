@@ -18,6 +18,12 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
     const file = event.target.files[0];
     if (file) {
       const imageURL = URL.createObjectURL(file);
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_image_uploaded", {
+          imageType: type === "cover" ? "cover" : "profile",
+          fileSize: file.size ? String(file.size) : "",
+        });
+      }
       if (type === "cover") {
         setUploadedImage(imageURL);
       } else {
