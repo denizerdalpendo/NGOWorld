@@ -47,7 +47,6 @@ export function useAuth(authType) {
 
     if (response?.status === 201 || response?.status === 200) {
       showSuccessToast(response?.data?.message);
-
       const userData = response.data.user;
       dispatch(
         updateUserData({
@@ -58,19 +57,16 @@ export function useAuth(authType) {
 
       pendo.identify({
         visitor: {
-          id: userData._id,
+          id: userData.userName,
           email: userData.email,
           full_name: userData.name,
-          userName: userData.userName,
           userType: userData.userType,
           firstName: userData.firstName,
           lastName: userData.lastName,
           description: userData.description,
           tagLine: userData.tagLine,
           city: userData.city,
-          state: userData.state,
           country: userData.country,
-          pincode: userData.pincode,
           hasCompletedProfile: userData.config?.hasCompletedProfile,
         },
       });
