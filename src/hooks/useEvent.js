@@ -68,11 +68,37 @@ export function useEvent(event) {
         showSuccessToast(response.data.message);
         setshowCreateModal(false);
 
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            eventName: event.name,
+            eventMode: event.mode,
+            eventUid: event.uid,
+            country: event.country,
+            platform: event.platform,
+            startDate: event.startDate,
+            endDate: event.endDate,
+          });
+        }
+
         mutate(eventEndpoints.all);
       } else {
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_creation_failed", {
+            errorType: "api_error",
+            errorMessage: response.response?.data?.message,
+            eventMode: event.mode,
+          });
+        }
         showErrorToast(response.response.data.message);
       }
     } else {
+      if (typeof pendo !== "undefined") {
+        pendo.track("event_creation_failed", {
+          errorType: "validation_error",
+          validationErrors: Object.keys(errors).join(","),
+          eventMode: event.mode,
+        });
+      }
       showErrorToast("Please fill all the required fields");
     }
   };

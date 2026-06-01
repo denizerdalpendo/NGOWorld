@@ -117,6 +117,15 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
 
     if (data.status === STATUSCODE.OK) {
       showSuccessToast(data?.data?.message);
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          hasNewCoverImage: !!uploadedImage,
+          hasNewProfilePicture: !!uploadedProfilePicture,
+          city: credentials.address?.city,
+          state: credentials.address?.state,
+          country: credentials.address?.country,
+        });
+      }
       refreshProfileData();
       setOpenModal(false);
       return;

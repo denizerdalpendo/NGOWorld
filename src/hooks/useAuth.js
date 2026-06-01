@@ -22,6 +22,13 @@ export function useAuth(authType) {
         ...prev,
         email: "Please enter a valid email address",
       }));
+      if (authType === "signup" && typeof pendo !== "undefined") {
+        pendo.track("signup_validation_failed", {
+          failedField: "email",
+          errorMessage: "Please enter a valid email address",
+          userType: credentials.userType?.value || "unknown",
+        });
+      }
       return;
     }
 
@@ -33,6 +40,13 @@ export function useAuth(authType) {
         password:
           "Password must be minimum 8 characters long with atleast 1 number, 1 uppercase and 1 lowercase letter",
       }));
+      if (authType === "signup" && typeof pendo !== "undefined") {
+        pendo.track("signup_validation_failed", {
+          failedField: "password",
+          errorMessage: "Password must be minimum 8 characters long",
+          userType: credentials.userType?.value || "unknown",
+        });
+      }
       return;
     }
 
@@ -53,6 +67,21 @@ export function useAuth(authType) {
           isLoggedIn: true,
         }),
       );
+
+      if (typeof pendo !== "undefined") {
+        if (authType === "signup") {
+          pendo.track("user_signed_up", {
+            userType: credentials.userType?.value || "unknown",
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        } else {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        }
+      }
 
       setTimeout(() => {
         navigate("/");
