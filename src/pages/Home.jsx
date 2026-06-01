@@ -15,8 +15,28 @@ const Home = () => {
 
     if (authData?.status === 200) {
       showSuccessToast(authData?.data?.message);
-      dispatch(updateUserData(authData.data.user));
+      const userData = authData.data.user;
+      dispatch(updateUserData(userData));
       dispatch(toggleUserLogin());
+
+      pendo.identify({
+        visitor: {
+          id: userData._id,
+          email: userData.email,
+          full_name: userData.name,
+          userName: userData.userName,
+          userType: userData.userType,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          description: userData.description,
+          tagLine: userData.tagLine,
+          city: userData.city,
+          state: userData.state,
+          country: userData.country,
+          pincode: userData.pincode,
+          hasCompletedProfile: userData.config?.hasCompletedProfile,
+        },
+      });
     } else {
       showErrorToast(authData?.message);
     }
