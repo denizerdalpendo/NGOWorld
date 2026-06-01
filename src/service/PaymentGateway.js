@@ -17,6 +17,13 @@ export default async function displayRazorpay(money) {
     image: "https://i.ibb.co/JC4g0ZD/favicon.png",
     order_id: data.id,
     handler: function () {
+      if (typeof pendo !== "undefined") {
+        pendo.track("donation_completed", {
+          amount: data.data.amount,
+          currency: data.currency || "INR",
+          clubName: "Milan",
+        });
+      }
       toast("🌈 Thankyou for the help.", {
         position: "top-right",
         autoClose: 1200,
@@ -37,4 +44,11 @@ export default async function displayRazorpay(money) {
 
   const paymentObject = new window.Razorpay(options);
   paymentObject.open();
+
+  if (typeof pendo !== "undefined") {
+    pendo.track("donation_initiated", {
+      amount: data.data.amount,
+      currency: data.currency || "INR",
+    });
+  }
 }
