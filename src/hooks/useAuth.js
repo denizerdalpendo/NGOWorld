@@ -47,12 +47,33 @@ export function useAuth(authType) {
 
     if (response?.status === 201 || response?.status === 200) {
       showSuccessToast(response?.data?.message);
+      const user = response.data.user;
       dispatch(
         updateUserData({
-          ...response.data.user,
+          ...user,
           isLoggedIn: true,
         }),
       );
+
+      pendo.identify({
+        visitor: {
+          id: user.userName,
+          email: user.email,
+          full_name: user.userType === 'individual'
+            ? [user.firstName, user.lastName].filter(Boolean).join(' ')
+            : user.name || '',
+          userType: user.userType,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          name: user.name,
+          city: user.city,
+          state: user.state,
+          country: user.country,
+          pincode: user.pincode,
+          tagLine: user.tagLine,
+          description: user.description,
+        },
+      });
 
       setTimeout(() => {
         navigate("/");
