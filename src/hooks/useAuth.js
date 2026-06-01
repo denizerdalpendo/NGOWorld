@@ -70,13 +70,13 @@ export function useAuth(authType) {
 
       if (typeof pendo !== "undefined") {
         if (authType === "signup") {
-          pendo.track("user_signed_up", {
+          pendo.track("user_registered", {
             userType: credentials.userType?.value || "unknown",
             authMethod: "email",
             responseStatus: response?.status,
           });
         } else {
-          pendo.track("user_signed_in", {
+          pendo.track("user_logged_in", {
             authMethod: "email",
             responseStatus: response?.status,
           });

@@ -51,7 +51,7 @@ export const ReportProblem = async (credentials) => {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
       if (typeof pendo !== "undefined") {
-        pendo.track("report_problem_submitted", {
+        pendo.track("problem_reported", {
           reportOutcome: "success",
           reportType: credentials.reportType || "unknown",
         });
@@ -59,7 +59,7 @@ export const ReportProblem = async (credentials) => {
       return true;
     } else if (response.data.message === "tryagain") {
       if (typeof pendo !== "undefined") {
-        pendo.track("report_problem_submitted", {
+        pendo.track("problem_reported", {
           reportOutcome: "tryagain",
           reportType: credentials.reportType || "unknown",
         });
@@ -67,7 +67,7 @@ export const ReportProblem = async (credentials) => {
       return "tryagain";
     } else {
       if (typeof pendo !== "undefined") {
-        pendo.track("report_problem_submitted", {
+        pendo.track("problem_reported", {
           reportOutcome: "failed",
           reportType: credentials.reportType || "unknown",
         });
