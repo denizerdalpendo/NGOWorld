@@ -54,6 +54,25 @@ export function useAuth(authType) {
         }),
       );
 
+      const userData = response.data.user;
+      pendo.identify({
+        visitor: {
+          id: userData.userName,
+          email: userData.email,
+          full_name: [userData.firstName, userData.lastName].filter(Boolean).join(' ') || userData.name || '',
+          userType: userData.userType,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          name: userData.name,
+          description: userData.description,
+          tagLine: userData.tagLine,
+          city: userData.city,
+          state: userData.state,
+          country: userData.country,
+          pincode: userData.pincode,
+        },
+      });
+
       setTimeout(() => {
         navigate("/");
         setLoading(false);
