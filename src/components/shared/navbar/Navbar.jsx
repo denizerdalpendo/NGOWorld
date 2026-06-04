@@ -68,6 +68,7 @@ const Navbar = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      pendo.clearSession();
       navigate("/");
       dispatch(resetUserData());
       localStorage.clear();
