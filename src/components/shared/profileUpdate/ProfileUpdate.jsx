@@ -48,6 +48,14 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
       } else {
         setUploadedProfilePicture(imageURL);
       }
+
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_image_uploaded", {
+          imageType: type === "cover" ? "cover" : "profile_picture",
+          fileSize: file.size,
+          fileType: file.type,
+        });
+      }
     }
   };
 

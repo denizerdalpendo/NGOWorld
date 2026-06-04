@@ -17,6 +17,12 @@ const Home = () => {
       showSuccessToast(authData?.data?.message);
       dispatch(updateUserData(authData.data.user));
       dispatch(toggleUserLogin());
+
+      if (typeof pendo !== "undefined") {
+        pendo.track("google_oauth_completed", {
+          authMethod: "google",
+        });
+      }
     } else {
       showErrorToast(authData?.message);
     }

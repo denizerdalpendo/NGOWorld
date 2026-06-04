@@ -18,11 +18,10 @@ export default async function displayRazorpay(money) {
     order_id: data.id,
     handler: function () {
       if (typeof pendo !== "undefined") {
-        pendo.track("donation_payment_completed", {
-          donationAmount: data.data.amount,
+        pendo.track("donation_completed", {
+          amount: data.data.amount,
           currency: data.currency || "INR",
-          orderId: data.id,
-          paymentStatus: "success",
+          orderId: data.id || "",
         });
       }
       toast("🌈 Thankyou for the help.", {
@@ -43,14 +42,14 @@ export default async function displayRazorpay(money) {
     },
   };
 
-  const paymentObject = new window.Razorpay(options);
-  paymentObject.open();
-
   if (typeof pendo !== "undefined") {
-    pendo.track("donation_payment_initiated", {
-      donationAmount: data.data.amount,
+    pendo.track("donation_initiated", {
+      amount: data.data.amount,
       currency: data.currency || "INR",
-      orderId: data.id,
+      orderId: data.id || "",
     });
   }
+
+  const paymentObject = new window.Razorpay(options);
+  paymentObject.open();
 }

@@ -49,7 +49,7 @@ const Profile = () => {
       showSuccessToast(data?.data?.message);
       if (typeof pendo !== "undefined") {
         pendo.track("user_logged_out", {
-          responseStatus: data?.status,
+          logoutSource: "profile",
         });
       }
       setTimeout(() => {
