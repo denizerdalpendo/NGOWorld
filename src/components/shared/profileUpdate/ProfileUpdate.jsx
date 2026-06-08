@@ -42,11 +42,27 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
   const handleFileChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
+      // Track profile image upload
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_image_uploaded", {
+          imageType: type === "cover" ? "cover" : "profile_picture",
+          uploadContext: "profile_update",
+        });
+      }
+
       const imageURL = URL.createObjectURL(file);
       if (type === "cover") {
         setUploadedImage(imageURL);
       } else {
         setUploadedProfilePicture(imageURL);
+      }
+
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_image_uploaded", {
+          imageType: type === "cover" ? "cover" : "profile_picture",
+          fileSize: file.size,
+          fileType: file.type,
+        });
       }
     }
   };
@@ -116,7 +132,46 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      // Track profile update
+      if (typeof pendo !== "undefined") {
+        const updatedFields = [];
+        if (credentials.description !== (profileData?.description || ""))
+          updatedFields.push("description");
+        if (credentials.name !== (profileData?.name || ""))
+          updatedFields.push("name");
+        if (credentials.address?.city !== (profileData?.address?.city || ""))
+          updatedFields.push("city");
+        if (credentials.address?.state !== (profileData?.address?.state || ""))
+          updatedFields.push("state");
+        if (
+          credentials.address?.country !==
+          (profileData?.address?.country || "")
+        )
+          updatedFields.push("country");
+
+        pendo.track("profile_updated", {
+          updatedFields: updatedFields.join(","),
+          hasNewCoverImage: Boolean(uploadedImage),
+          hasNewProfilePicture: Boolean(uploadedProfilePicture),
+          descriptionLength: credentials?.description
+            ? credentials.description.length
+            : 0,
+          city: credentials?.address?.city || "",
+          state: credentials?.address?.state || "",
+          country: credentials?.address?.country || "",
+        });
+      }
+
       showSuccessToast(data?.data?.message);
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          hasNewCoverImage: !!uploadedImage,
+          hasNewProfilePicture: !!uploadedProfilePicture,
+          city: credentials.address?.city,
+          state: credentials.address?.state,
+          country: credentials.address?.country,
+        });
+      }
       refreshProfileData();
       setOpenModal(false);
       return;

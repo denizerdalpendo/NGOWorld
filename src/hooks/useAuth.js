@@ -22,6 +22,13 @@ export function useAuth(authType) {
         ...prev,
         email: "Please enter a valid email address",
       }));
+      if (authType === "signup" && typeof pendo !== "undefined") {
+        pendo.track("signup_validation_failed", {
+          failedField: "email",
+          errorMessage: "Please enter a valid email address",
+          userType: credentials.userType?.value || "unknown",
+        });
+      }
       return;
     }
 
@@ -33,6 +40,13 @@ export function useAuth(authType) {
         password:
           "Password must be minimum 8 characters long with atleast 1 number, 1 uppercase and 1 lowercase letter",
       }));
+      if (authType === "signup" && typeof pendo !== "undefined") {
+        pendo.track("signup_validation_failed", {
+          failedField: "password",
+          errorMessage: "Password must be minimum 8 characters long",
+          userType: credentials.userType?.value || "unknown",
+        });
+      }
       return;
     }
 
@@ -46,6 +60,26 @@ export function useAuth(authType) {
         }));
 
     if (response?.status === 201 || response?.status === 200) {
+      if (authType === "signin") {
+        // Track successful sign-in
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        }
+      } else {
+        // Track successful registration
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_registered", {
+            userType: credentials.userType?.value || "unknown",
+            authMethod: "email",
+            userName: response?.data?.user?.name || "",
+            responseStatus: response?.status,
+          });
+        }
+      }
+
       showSuccessToast(response?.data?.message);
       dispatch(
         updateUserData({
@@ -54,11 +88,37 @@ export function useAuth(authType) {
         }),
       );
 
+      if (typeof pendo !== "undefined") {
+        if (authType === "signup") {
+          pendo.track("user_signed_up", {
+            userType: credentials.userType?.value || "unknown",
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        } else {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        }
+      }
+
       setTimeout(() => {
         navigate("/");
         setLoading(false);
       }, 1000);
     } else {
+      // Track authentication failure
+      if (typeof pendo !== "undefined") {
+        pendo.track("auth_failed", {
+          authType: authType,
+          errorMessage: String(
+            response?.data?.message || "unknown",
+          ).substring(0, 100),
+          responseStatus: response?.status || 0,
+        });
+      }
+
       showErrorToast(response?.data?.message);
       setLoading(false);
     }

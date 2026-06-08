@@ -47,6 +47,11 @@ const Profile = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_logged_out", {
+          logoutSource: "profile",
+        });
+      }
       setTimeout(() => {
         navigate("/");
         dispatch(resetUserData());

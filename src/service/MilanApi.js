@@ -50,8 +50,22 @@ export const ReportProblem = async (credentials) => {
   try {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
+      // Track successful problem report submission
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          reportSuccess: true,
+          wasRateLimited: false,
+        });
+      }
       return true;
     } else if (response.data.message === "tryagain") {
+      // Track rate-limited report attempt
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          reportSuccess: false,
+          wasRateLimited: true,
+        });
+      }
       return "tryagain";
     } else {
       return false;
@@ -127,6 +141,11 @@ export const successCallback = async () => {
 // Google logout
 export const Logout = async () => {
   try {
+    // Track user logout before the request completes
+    if (typeof pendo !== "undefined") {
+      pendo.track("user_logout", {});
+    }
+
     const response = await Axios.get(authEndpoints.logout, {
       withCredentials: true,
     });

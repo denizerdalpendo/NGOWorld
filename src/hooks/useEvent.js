@@ -65,14 +65,64 @@ export function useEvent(event) {
       const response = await CreateEvent(event);
 
       if (response.status === 201) {
+        // Track successful event creation
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            eventName: event.name || "",
+            eventMode: event.mode || "",
+            startDate: event.startDate
+              ? String(event.startDate)
+              : "",
+            endDate: event.endDate ? String(event.endDate) : "",
+            city: event.city || "",
+            state: event.state || "",
+            country: event.country || "",
+            platform: event.platform || "",
+            hasCoverImage: Boolean(
+              event.coverImage &&
+                event.coverImage !==
+                  "https://images.pexels.com/videos/3045163/free-video-3045163.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+            ),
+            descriptionLength: event.description
+              ? event.description.length
+              : 0,
+          });
+        }
+
         showSuccessToast(response.data.message);
         setshowCreateModal(false);
 
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            eventName: event.name,
+            eventMode: event.mode,
+            eventUid: event.uid,
+            country: event.country,
+            platform: event.platform,
+            startDate: event.startDate,
+            endDate: event.endDate,
+          });
+        }
+
         mutate(eventEndpoints.all);
       } else {
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_creation_failed", {
+            errorType: "api_error",
+            errorMessage: response.response?.data?.message,
+            eventMode: event.mode,
+          });
+        }
         showErrorToast(response.response.data.message);
       }
     } else {
+      if (typeof pendo !== "undefined") {
+        pendo.track("event_creation_failed", {
+          errorType: "validation_error",
+          validationErrors: Object.keys(errors).join(","),
+          eventMode: event.mode,
+        });
+      }
       showErrorToast("Please fill all the required fields");
     }
   };
