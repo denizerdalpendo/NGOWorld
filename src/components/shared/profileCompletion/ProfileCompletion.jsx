@@ -56,6 +56,25 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
                 });
 
                 if (data?.status === 200) {
+                  // Track profile completion
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("profile_completed", {
+                      hasDescription: Boolean(credentials?.description),
+                      hasCoverImage: Boolean(uploadedImage),
+                      hasFullAddress: Boolean(
+                        credentials?.address?.city &&
+                          credentials?.address?.state &&
+                          credentials?.address?.country,
+                      ),
+                      descriptionLength: credentials?.description
+                        ? credentials.description.length
+                        : 0,
+                      city: credentials?.address?.city || "",
+                      state: credentials?.address?.state || "",
+                      country: credentials?.address?.country || "",
+                    });
+                  }
+
                   showSuccessToast(data?.data?.message);
                   if (typeof pendo !== "undefined") {
                     pendo.track("profile_completed", {

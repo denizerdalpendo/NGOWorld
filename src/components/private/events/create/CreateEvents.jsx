@@ -52,6 +52,15 @@ const CreateEvents = ({ setshowCreateModal }) => {
   const handleCreateBase64 = useCallback(async (e) => {
     const file = e.target.files?.[0];
     const base64 = await convertToBase64(e);
+
+    // Track event cover image upload
+    if (typeof pendo !== "undefined") {
+      pendo.track("event_cover_image_uploaded", {
+        fileType: file?.type || "unknown",
+        hasReplacedDefault: true,
+      });
+    }
+
     setevent((prevEvent) => ({ ...prevEvent, coverImage: base64 }));
     if (typeof pendo !== "undefined" && file) {
       pendo.track("event_image_uploaded", {

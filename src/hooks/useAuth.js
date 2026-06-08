@@ -60,6 +60,26 @@ export function useAuth(authType) {
         }));
 
     if (response?.status === 201 || response?.status === 200) {
+      if (authType === "signin") {
+        // Track successful sign-in
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+            responseStatus: response?.status,
+          });
+        }
+      } else {
+        // Track successful registration
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_registered", {
+            userType: credentials.userType?.value || "unknown",
+            authMethod: "email",
+            userName: response?.data?.user?.name || "",
+            responseStatus: response?.status,
+          });
+        }
+      }
+
       showSuccessToast(response?.data?.message);
       dispatch(
         updateUserData({
@@ -88,6 +108,17 @@ export function useAuth(authType) {
         setLoading(false);
       }, 1000);
     } else {
+      // Track authentication failure
+      if (typeof pendo !== "undefined") {
+        pendo.track("auth_failed", {
+          authType: authType,
+          errorMessage: String(
+            response?.data?.message || "unknown",
+          ).substring(0, 100),
+          responseStatus: response?.status || 0,
+        });
+      }
+
       showErrorToast(response?.data?.message);
       setLoading(false);
     }

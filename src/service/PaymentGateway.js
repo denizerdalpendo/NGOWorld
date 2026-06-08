@@ -16,14 +16,20 @@ export default async function displayRazorpay(money) {
     description: "A hub for NGOs",
     image: "https://i.ibb.co/JC4g0ZD/favicon.png",
     order_id: data.id,
-    handler: function () {
+    handler: function (response) {
+      // Track successful donation payment
       if (typeof pendo !== "undefined") {
-        pendo.track("donation_completed", {
-          amount: data.data.amount,
+        pendo.track("donation_payment_completed", {
+          amount: data.data.amount || 0,
           currency: data.currency || "INR",
-          orderId: data.id || "",
+          orderId: response.razorpay_order_id || "",
+          clubName: "Milan",
+          paymentMethod: response.razorpay_payment_id
+            ? "razorpay"
+            : "unknown",
         });
       }
+
       toast("🌈 Thankyou for the help.", {
         position: "top-right",
         autoClose: 1200,
@@ -41,14 +47,6 @@ export default async function displayRazorpay(money) {
       contact: "8240415709",
     },
   };
-
-  if (typeof pendo !== "undefined") {
-    pendo.track("donation_initiated", {
-      amount: data.data.amount,
-      currency: data.currency || "INR",
-      orderId: data.id || "",
-    });
-  }
 
   const paymentObject = new window.Razorpay(options);
   paymentObject.open();
