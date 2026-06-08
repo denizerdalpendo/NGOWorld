@@ -47,6 +47,7 @@ const Profile = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      pendo.clearSession();
       setTimeout(() => {
         navigate("/");
         dispatch(resetUserData());
