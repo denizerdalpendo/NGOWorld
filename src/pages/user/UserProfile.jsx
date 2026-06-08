@@ -42,6 +42,7 @@ const UserProfile = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      pendo.clearSession();
       setTimeout(() => {
         navigate("/");
         toggleLoading(false);
