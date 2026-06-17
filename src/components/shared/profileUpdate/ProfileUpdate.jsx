@@ -116,6 +116,14 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          descriptionLength: credentials?.description?.length || 0,
+          hasCoverImage: Boolean(uploadedImage),
+          country: credentials?.address?.country || "",
+          city: credentials?.address?.city || "",
+        });
+      }
       showSuccessToast(data?.data?.message);
       refreshProfileData();
       setOpenModal(false);

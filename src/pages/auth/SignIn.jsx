@@ -23,6 +23,11 @@ const SignIn = () => {
 
   const handleGoogle = async () => {
     const response = await GoogleAuth();
+    if (typeof pendo !== "undefined") {
+      pendo.track("google_auth_initiated", {
+        authContext: "signin",
+      });
+    }
     window.location.href = response;
   };
 

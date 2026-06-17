@@ -46,6 +46,21 @@ export function useAuth(authType) {
         }));
 
     if (response?.status === 201 || response?.status === 200) {
+      if (authType === "signin") {
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+          });
+        }
+      } else if (response?.status === 201) {
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_registered", {
+            userType: credentials.userType?.value || "unknown",
+            authMethod: "email",
+          });
+        }
+      }
+
       showSuccessToast(response?.data?.message);
       const user = response.data.user;
       dispatch(
