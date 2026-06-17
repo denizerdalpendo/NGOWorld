@@ -117,6 +117,16 @@ const useProfileCompletion = () => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_completed", {
+          hasDescription: Boolean(updatedCredentials.description),
+          hasAddress: Boolean(updatedCredentials.address?.line1),
+          hasCoverImage: Boolean(updatedCredentials.coverImage),
+          city: updatedCredentials.address?.city || "",
+          state: updatedCredentials.address?.state || "",
+          country: updatedCredentials.address?.country || "",
+        });
+      }
       showSuccessToast(data?.data?.message);
       return;
     }

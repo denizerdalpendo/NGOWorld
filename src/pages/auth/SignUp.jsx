@@ -29,6 +29,11 @@ const SignUp = () => {
   // Handlers
   const handleGoogle = async () => {
     const response = await GoogleAuth();
+    if (response && typeof pendo !== "undefined") {
+      pendo.track("google_auth_initiated", {
+        authPage: "signup",
+      });
+    }
     window.location.href = response;
   };
 

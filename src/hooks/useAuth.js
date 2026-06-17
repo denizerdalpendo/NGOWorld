@@ -46,6 +46,23 @@ export function useAuth(authType) {
         }));
 
     if (response?.status === 201 || response?.status === 200) {
+      if (authType === "signup") {
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_registered", {
+            userType: credentials.userType?.value || credentials.userType,
+            authMethod: "email",
+            email_domain: credentials.email?.split("@")[1] || "",
+          });
+        }
+      } else {
+        if (typeof pendo !== "undefined") {
+          pendo.track("user_logged_in", {
+            authMethod: "email",
+            email_domain: credentials.email?.split("@")[1] || "",
+          });
+        }
+      }
+
       showSuccessToast(response?.data?.message);
       const user = response.data.user;
       dispatch(

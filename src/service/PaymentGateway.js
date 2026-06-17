@@ -17,6 +17,13 @@ export default async function displayRazorpay(money) {
     image: "https://i.ibb.co/JC4g0ZD/favicon.png",
     order_id: data.id,
     handler: function () {
+      if (typeof pendo !== "undefined") {
+        pendo.track("donation_completed", {
+          amount: String(data.data.amount || money),
+          currency: data.currency || "INR",
+          orderId: data.id || "",
+        });
+      }
       toast("🌈 Thankyou for the help.", {
         position: "top-right",
         autoClose: 1200,
@@ -34,6 +41,14 @@ export default async function displayRazorpay(money) {
       contact: "8240415709",
     },
   };
+
+  if (typeof pendo !== "undefined") {
+    pendo.track("donation_initiated", {
+      amount: String(data.data.amount || money),
+      currency: data.currency || "INR",
+      orderId: data.id || "",
+    });
+  }
 
   const paymentObject = new window.Razorpay(options);
   paymentObject.open();

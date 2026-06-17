@@ -65,6 +65,19 @@ export function useEvent(event) {
       const response = await CreateEvent(event);
 
       if (response.status === 201) {
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            eventName: event.name || "",
+            eventMode: event.mode || "",
+            startDate: event.startDate ? String(event.startDate) : "",
+            endDate: event.endDate ? String(event.endDate) : "",
+            city: event.city || "",
+            state: event.state || "",
+            country: event.country || "",
+            platform: event.platform || "",
+            hasImage: Boolean(event.coverImage),
+          });
+        }
         showSuccessToast(response.data.message);
         setshowCreateModal(false);
 
