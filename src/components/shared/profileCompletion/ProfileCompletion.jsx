@@ -57,6 +57,18 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
 
                 if (data?.status === 200) {
                   showSuccessToast(data?.data?.message);
+
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("profile_completed", {
+                      descriptionLength: credentials?.description?.length || 0,
+                      city: credentials?.address?.city || "",
+                      state: credentials?.address?.state || "",
+                      country: credentials?.address?.country || "",
+                      pincode: credentials?.address?.pincode || "",
+                      hasCoverImage: Boolean(credentials?.coverImage),
+                    });
+                  }
+
                   setShowEditModal(false);
                   refreshProfileData();
                 }

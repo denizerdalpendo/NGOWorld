@@ -66,6 +66,21 @@ export function useEvent(event) {
 
       if (response.status === 201) {
         showSuccessToast(response.data.message);
+
+        if (typeof pendo !== "undefined") {
+          pendo.track("event_created", {
+            eventMode: data.mode || "",
+            eventName: data.name || "",
+            startDate: data.startDate || "",
+            endDate: data.endDate || "",
+            platform: data.platformLink ? "online" : "offline",
+            country: data.country || "",
+            city: data.city || "",
+            state: data.state || "",
+            hasCustomCoverImage: Boolean(data.coverImage),
+          });
+        }
+
         setshowCreateModal(false);
 
         mutate(eventEndpoints.all);
