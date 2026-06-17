@@ -15,8 +15,21 @@ const Home = () => {
 
     if (authData?.status === 200) {
       showSuccessToast(authData?.data?.message);
-      dispatch(updateUserData(authData.data.user));
+      const user = authData.data.user;
+      dispatch(updateUserData(user));
       dispatch(toggleUserLogin());
+
+      pendo.identify({
+        visitor: {
+          id: user._id,
+          email: user.email,
+          full_name: user.firstName && user.lastName
+            ? user.firstName + ' ' + user.lastName
+            : user.name || '',
+          user_name: user.userName,
+          user_type: user.userType,
+        },
+      });
     } else {
       showErrorToast(authData?.message);
     }

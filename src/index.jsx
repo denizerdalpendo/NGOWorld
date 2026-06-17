@@ -9,6 +9,12 @@ import App from "./App";
 import { persistor, store } from "./redux/store";
 import "./styles/index.css";
 
+pendo.initialize({
+  visitor: {
+    id: '',
+  },
+});
+
 let vh = window.innerHeight * 0.01;
 document.documentElement.style.setProperty("--vh", `${vh}px`);
 
