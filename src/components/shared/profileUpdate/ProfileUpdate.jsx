@@ -117,6 +117,27 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
 
     if (data.status === STATUSCODE.OK) {
       showSuccessToast(data?.data?.message);
+
+      if (typeof pendo !== "undefined") {
+        const fieldsUpdated = [];
+        if (credentials.name !== profileData?.name) fieldsUpdated.push("name");
+        if (credentials.description !== profileData?.description) fieldsUpdated.push("description");
+        if (credentials.address?.city !== profileData?.address?.city) fieldsUpdated.push("city");
+        if (credentials.address?.state !== profileData?.address?.state) fieldsUpdated.push("state");
+        if (credentials.address?.country !== profileData?.address?.country) fieldsUpdated.push("country");
+
+        pendo.track("profile_updated", {
+          fieldsUpdated: fieldsUpdated.join(","),
+          descriptionLength: credentials?.description?.length || 0,
+          name: credentials?.name || "",
+          city: credentials?.address?.city || "",
+          state: credentials?.address?.state || "",
+          country: credentials?.address?.country || "",
+          hasCoverImage: Boolean(uploadedImage),
+          hasProfilePicture: Boolean(uploadedProfilePicture),
+        });
+      }
+
       refreshProfileData();
       setOpenModal(false);
       return;

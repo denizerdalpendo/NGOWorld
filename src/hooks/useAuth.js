@@ -54,6 +54,19 @@ export function useAuth(authType) {
         }),
       );
 
+      if (typeof pendo !== "undefined") {
+        if (authType === "signin") {
+          pendo.track("user_signed_in", {
+            authMethod: "email",
+          });
+        } else {
+          pendo.track("user_signed_up", {
+            userType: credentials.userType?.value || "",
+            authMethod: "email",
+          });
+        }
+      }
+
       setTimeout(() => {
         navigate("/");
         setLoading(false);
