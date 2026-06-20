@@ -50,6 +50,12 @@ export const ReportProblem = async (credentials) => {
   try {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("report_problem_submitted", {
+          reportType: credentials?.type || "general",
+          success: true,
+        });
+      }
       return true;
     } else if (response.data.message === "tryagain") {
       return "tryagain";
@@ -130,7 +136,9 @@ export const Logout = async () => {
     const response = await Axios.get(authEndpoints.logout, {
       withCredentials: true,
     });
-
+    if (typeof pendo !== "undefined") {
+      pendo.track("user_logged_out", {});
+    }
     return response;
   } catch (error) {
     return error;
