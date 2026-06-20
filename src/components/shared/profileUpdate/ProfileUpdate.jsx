@@ -45,8 +45,20 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
       const imageURL = URL.createObjectURL(file);
       if (type === "cover") {
         setUploadedImage(imageURL);
+        if (typeof pendo !== "undefined") {
+          pendo.track("cover_image_uploaded", {
+            uploadContext: "profile_update",
+            fileType: file.type || "",
+          });
+        }
       } else {
         setUploadedProfilePicture(imageURL);
+        if (typeof pendo !== "undefined") {
+          pendo.track("profile_picture_uploaded", {
+            uploadContext: "profile_update",
+            fileType: file.type || "",
+          });
+        }
       }
     }
   };
@@ -116,6 +128,23 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        const updatedFields = [];
+        if (credentials.description !== (profileData?.description || "")) updatedFields.push("description");
+        if (credentials.name !== (profileData?.name || "")) updatedFields.push("name");
+        if (credentials.address?.city !== (profileData?.address?.city || "")) updatedFields.push("city");
+        if (credentials.address?.country !== (profileData?.address?.country || "")) updatedFields.push("country");
+
+        pendo.track("profile_updated", {
+          updatedFields: updatedFields.join(","),
+          hasNewCoverImage: Boolean(uploadedImage),
+          hasNewProfilePicture: Boolean(uploadedProfilePicture),
+          descriptionLength: credentials.description?.length || 0,
+          city: credentials.address?.city || "",
+          country: credentials.address?.country || "",
+        });
+      }
+
       showSuccessToast(data?.data?.message);
       refreshProfileData();
       setOpenModal(false);

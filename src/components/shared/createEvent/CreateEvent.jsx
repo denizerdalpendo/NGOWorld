@@ -117,6 +117,18 @@ const CreateEvent = ({ setShowCreateModal }) => {
     });
 
     if (data.status === STATUSCODE.OK) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("event_created", {
+          eventName: credentials.name || "",
+          eventMode: credentials.eventMode || "",
+          hasDescription: Boolean(credentials.description),
+          hasCoverImage: Boolean(uploadedImage),
+          city: credentials.address?.city || "",
+          country: credentials.address?.country || "",
+          descriptionLength: credentials.description?.length || 0,
+        });
+      }
+
       showSuccessToast(data?.data?.message);
       setShowCreateModal(false);
       return;
