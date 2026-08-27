@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* global pendo */
 import { STATUSCODE } from "@/static/Constants";
 import { updateUserProfile } from "@service/MilanApi";
 import { showSuccessToast } from "@utils/Toasts";
@@ -117,6 +118,13 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
 
     if (data.status === STATUSCODE.OK) {
       showSuccessToast(data?.data?.message);
+      pendo.track("profile_updated", {
+        has_description: Boolean(credentials.description),
+        has_cover_image: Boolean(credentials.coverImage),
+        city: credentials.address?.city || "",
+        state: credentials.address?.state || "",
+        country: credentials.address?.country || "",
+      });
       refreshProfileData();
       setOpenModal(false);
       return;

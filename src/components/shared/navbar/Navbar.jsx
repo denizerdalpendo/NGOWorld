@@ -1,3 +1,4 @@
+/* global pendo */
 import profileImage from "@/assets/pictures/Navbar/profilePlaceholderImage.png";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -68,6 +69,9 @@ const Navbar = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      pendo.track("user_logged_out", {
+        logout_source: "navbar",
+      });
       pendo.clearSession();
       navigate("/");
       dispatch(resetUserData());
