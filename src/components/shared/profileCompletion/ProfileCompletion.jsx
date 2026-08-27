@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* global pendo */
 import useProfileCompletion from "@hooks/useProfileCompletion";
 import { completeProfileApiCall } from "@service/MilanApi";
 import { showSuccessToast } from "@utils/Toasts";
@@ -57,6 +58,14 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
 
                 if (data?.status === 200) {
                   showSuccessToast(data?.data?.message);
+                  pendo.track("profile_completed", {
+                    has_description: Boolean(credentials.description),
+                    has_cover_image: Boolean(uploadedImage),
+                    city: credentials.address?.city || "",
+                    state: credentials.address?.state || "",
+                    country: credentials.address?.country || "",
+                    description_length: credentials.description?.length || 0,
+                  });
                   setShowEditModal(false);
                   refreshProfileData();
                 }

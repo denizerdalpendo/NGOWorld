@@ -1,6 +1,7 @@
 // All the AXIOS API calls will be made from here to the backend
 // These functions will be exported and then imported wherever needed
 
+/* global pendo */
 import Axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -50,6 +51,10 @@ export const ReportProblem = async (credentials) => {
   try {
     const response = await Axios.post(userEndpoints.report, credentials);
     if (response.data.success === true) {
+      pendo.track("report_problem_submitted", {
+        report_type: credentials.reportType || "",
+        success: true,
+      });
       return true;
     } else if (response.data.message === "tryagain") {
       return "tryagain";

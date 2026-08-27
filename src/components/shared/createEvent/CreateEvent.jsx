@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* global pendo */
 import { STATUSCODE } from "@/static/Constants";
 import { updateUserProfile } from "@service/MilanApi";
 import { showSuccessToast } from "@utils/Toasts";
@@ -118,6 +119,14 @@ const CreateEvent = ({ setShowCreateModal }) => {
 
     if (data.status === STATUSCODE.OK) {
       showSuccessToast(data?.data?.message);
+      pendo.track("event_created_from_dashboard", {
+        event_name: credentials.name,
+        event_mode: credentials.eventMode,
+        city: credentials.address?.city || "",
+        state: credentials.address?.state || "",
+        country: credentials.address?.country || "",
+        description_length: credentials.description?.length || 0,
+      });
       setShowCreateModal(false);
       return;
     }

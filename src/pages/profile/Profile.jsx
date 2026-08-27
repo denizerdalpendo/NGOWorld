@@ -1,3 +1,4 @@
+/* global pendo */
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
@@ -47,6 +48,9 @@ const Profile = () => {
 
     if (data?.status === 200) {
       showSuccessToast(data?.data?.message);
+      pendo.track("user_logged_out", {
+        logout_source: "profile",
+      });
       pendo.clearSession();
       setTimeout(() => {
         navigate("/");
