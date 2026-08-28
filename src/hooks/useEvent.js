@@ -1,3 +1,4 @@
+/* global pendo */
 import { useDispatch } from "react-redux";
 import { useSWRConfig } from "swr";
 import { eventEndpoints } from "../integrations/ApiEndpoints";
@@ -67,6 +68,16 @@ export function useEvent(event) {
       if (response.status === 201) {
         showSuccessToast(response.data.message);
         setshowCreateModal(false);
+
+        pendo.track("event_created", {
+          eventName: event.name,
+          eventMode: event.mode,
+          startDate:
+            event.startDate?.toISOString?.() || String(event.startDate),
+          endDate: event.endDate?.toISOString?.() || String(event.endDate),
+          country: event.country || "",
+          platform: event.platform || "",
+        });
 
         mutate(eventEndpoints.all);
       } else {

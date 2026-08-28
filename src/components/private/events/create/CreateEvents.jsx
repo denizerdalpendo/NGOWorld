@@ -1,3 +1,4 @@
+/* global pendo */
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -50,8 +51,14 @@ const CreateEvents = ({ setshowCreateModal }) => {
   const { validateEvent, submitCallback } = useEvent(event);
 
   const handleCreateBase64 = useCallback(async (e) => {
+    const fileType = e.target.files[0]?.type || "unknown";
     const base64 = await convertToBase64(e);
     setevent((prevEvent) => ({ ...prevEvent, coverImage: base64 }));
+
+    pendo.track("event_image_uploaded", {
+      fileType: fileType,
+    });
+
     e.target.value = "";
   }, []);
 

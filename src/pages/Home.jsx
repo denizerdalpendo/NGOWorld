@@ -1,3 +1,4 @@
+/* global pendo */
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
@@ -23,12 +24,17 @@ const Home = () => {
         visitor: {
           id: user._id,
           email: user.email,
-          full_name: user.firstName && user.lastName
-            ? user.firstName + ' ' + user.lastName
-            : user.name || '',
+          full_name:
+            user.firstName && user.lastName
+              ? user.firstName + " " + user.lastName
+              : user.name || "",
           user_name: user.userName,
           user_type: user.userType,
         },
+      });
+
+      pendo.track("user_signed_in_google", {
+        userType: user.userType,
       });
     } else {
       showErrorToast(authData?.message);

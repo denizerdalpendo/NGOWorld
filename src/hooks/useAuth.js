@@ -1,3 +1,4 @@
+/* global pendo */
 import { emailRegex } from "@/static/Constants";
 import { updateUserData } from "@redux/slice/userSlice";
 import checkInternetConnection from "@utils/CheckInternetConnection";
@@ -59,13 +60,26 @@ export function useAuth(authType) {
         visitor: {
           id: user._id,
           email: user.email,
-          full_name: user.firstName && user.lastName
-            ? user.firstName + ' ' + user.lastName
-            : user.name || '',
+          full_name:
+            user.firstName && user.lastName
+              ? user.firstName + " " + user.lastName
+              : user.name || "",
           user_name: user.userName,
           user_type: user.userType,
         },
       });
+
+      if (authType === "signin") {
+        pendo.track("user_signed_in", {
+          userType: user.userType,
+          authMethod: "email",
+        });
+      } else {
+        pendo.track("user_signed_up", {
+          userType: credentials.userType?.value || user.userType,
+          authMethod: "email",
+        });
+      }
 
       setTimeout(() => {
         navigate("/");
