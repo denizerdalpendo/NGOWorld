@@ -1,3 +1,4 @@
+/* global pendo */
 import { useDispatch } from "react-redux";
 import { useSWRConfig } from "swr";
 import { eventEndpoints } from "../integrations/ApiEndpoints";
@@ -66,6 +67,16 @@ export function useEvent(event) {
 
       if (response.status === 201) {
         showSuccessToast(response.data.message);
+
+        pendo.track("event_created", {
+          event_name: event.name,
+          event_mode: event.mode,
+          country: event.country || "",
+          city: event.city || "",
+          state: event.state || "",
+          has_cover_image: Boolean(event.coverImage),
+        });
+
         setshowCreateModal(false);
 
         mutate(eventEndpoints.all);

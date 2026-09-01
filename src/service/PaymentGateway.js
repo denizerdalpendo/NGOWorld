@@ -1,3 +1,4 @@
+/* global pendo */
 import Axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +18,10 @@ export default async function displayRazorpay(money) {
     image: "https://i.ibb.co/JC4g0ZD/favicon.png",
     order_id: data.id,
     handler: function () {
+      pendo.track("donation_payment_completed", {
+        amount: data.data.amount,
+        currency: data.currency || "INR",
+      });
       toast("🌈 Thankyou for the help.", {
         position: "top-right",
         autoClose: 1200,
