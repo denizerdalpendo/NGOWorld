@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* global pendo */
 import { STATUSCODE } from "@/static/Constants";
 import { updateUserProfile } from "@service/MilanApi";
 import { showSuccessToast } from "@utils/Toasts";
@@ -117,6 +118,27 @@ const ProfileUpdate = ({ setOpenModal, refreshProfileData, profileData }) => {
 
     if (data.status === STATUSCODE.OK) {
       showSuccessToast(data?.data?.message);
+
+      // Track Event: organization profile edit saved (confirmed by backend).
+      const fieldsChanged = ["name", "description"].filter(
+        (field) => credentials[field] !== (profileData?.[field] || ""),
+      );
+      addressFields.forEach((field) => {
+        if (
+          credentials.address[field] !== (profileData?.address?.[field] || "")
+        ) {
+          fieldsChanged.push(field);
+        }
+      });
+      pendo.track("organization_profile_updated", {
+        fields_changed: fieldsChanged,
+        name_changed: fieldsChanged.includes("name"),
+        description_length: credentials.description?.length || 0,
+        cover_image_updated: Boolean(uploadedImage),
+        profile_picture_updated: Boolean(uploadedProfilePicture),
+        country: credentials.address.country,
+      });
+
       refreshProfileData();
       setOpenModal(false);
       return;

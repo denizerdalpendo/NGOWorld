@@ -1,13 +1,21 @@
 /* eslint-disable no-unused-vars */
+/* global pendo */
 import useProfileCompletion from "@hooks/useProfileCompletion";
+import { selectUser } from "@redux/slice/userSlice";
 import { completeProfileApiCall } from "@service/MilanApi";
 import { showSuccessToast } from "@utils/Toasts";
 import clsx from "clsx";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Button } from "..";
 import "./ProfileCompletion.scss";
 
+// Module-level guard so the one-time onboarding milestone is reported at most
+// once per organization per browser session, even if the modal remounts.
+const trackedProfileCompletions = new Set();
+
 const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
+  const user = useSelector(selectUser);
   const { errors, validateForm, handleChange, credentials, handleResetFields } =
     useProfileCompletion();
 
@@ -57,6 +65,20 @@ const ProfileCompletion = ({ setShowEditModal, refreshProfileData }) => {
 
                 if (data?.status === 200) {
                   showSuccessToast(data?.data?.message);
+
+                  // Track Event: organization completed the required profile
+                  // step (PATCH confirmed by the backend).
+                  if (!trackedProfileCompletions.has(user?._id)) {
+                    trackedProfileCompletions.add(user?._id);
+                    pendo.track("organization_profile_completed", {
+                      description_length: credentials?.description?.length || 0,
+                      has_cover_image: Boolean(uploadedImage),
+                      country: credentials?.address?.country,
+                      state: credentials?.address?.state,
+                      city: credentials?.address?.city,
+                    });
+                  }
+
                   setShowEditModal(false);
                   refreshProfileData();
                 }

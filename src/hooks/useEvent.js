@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+/* global pendo */
 import { useSWRConfig } from "swr";
 import { eventEndpoints } from "../integrations/ApiEndpoints";
 import { CreateEvent } from "../service/MilanApi";
@@ -7,7 +7,6 @@ import { showErrorToast, showSuccessToast } from "../utils/Toasts";
 export function useEvent(event) {
   const { uid, ...data } = event;
   const errors = {};
-  const dispatch = useDispatch();
   const { mutate } = useSWRConfig();
 
   const validateEvent = () => {
@@ -66,6 +65,21 @@ export function useEvent(event) {
 
       if (response.status === 201) {
         showSuccessToast(response.data.message);
+
+        // Track Event: event creation confirmed by the backend (201).
+        const isOnline = event.mode === "Online";
+        pendo.track("event_created", {
+          event_mode: event.mode,
+          // The form pre-fills a placeholder URL; uploads are base64 data URLs.
+          has_cover_image:
+            typeof event.coverImage === "string" &&
+            event.coverImage.startsWith("data:"),
+          description_length: event.description?.length || 0,
+          country: isOnline ? undefined : event.country,
+          city: isOnline ? undefined : event.city,
+          platform: isOnline ? event.platform : undefined,
+        });
+
         setshowCreateModal(false);
 
         mutate(eventEndpoints.all);

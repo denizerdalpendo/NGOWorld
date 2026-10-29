@@ -1,3 +1,4 @@
+/* global pendo */
 import { emailRegex } from "@/static/Constants";
 import { updateUserData } from "@redux/slice/userSlice";
 import checkInternetConnection from "@utils/CheckInternetConnection";
@@ -59,13 +60,31 @@ export function useAuth(authType) {
         visitor: {
           id: user._id,
           email: user.email,
-          full_name: user.firstName && user.lastName
-            ? user.firstName + ' ' + user.lastName
-            : user.name || '',
+          full_name:
+            user.firstName && user.lastName
+              ? user.firstName + " " + user.lastName
+              : user.name || "",
           user_name: user.userName,
           user_type: user.userType,
         },
       });
+
+      // Track Event: fires only after the backend confirms the account was
+      // created (signup) or the credentials were accepted (signin).
+      const userType =
+        user?.userType ||
+        (authType === "signup" ? credentials.userType?.value : undefined);
+      if (authType === "signup") {
+        pendo.track("user_signed_up", {
+          user_type: userType,
+          auth_method: "email",
+        });
+      } else {
+        pendo.track("user_signed_in", {
+          auth_method: "email",
+          user_type: userType,
+        });
+      }
 
       setTimeout(() => {
         navigate("/");
